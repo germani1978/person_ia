@@ -1,98 +1,35 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:person_ia/datos/persona.dart';
 
-import '../datos/datos.dart';
 
 class Tabla extends StatefulWidget {
-  const Tabla({super.key});
+
+  final List<Persona> personas;
+  const Tabla({super.key, required this.personas});
 
   @override
   State<Tabla> createState() => _TablaState();
 }
 
 class _TablaState extends State<Tabla> {
-
-  final TextEditingController _controller = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Informe'),
-      ),
-      body: Center(child: SizedBox(
-        width: 300,
-        height: 240,
-        child: Column(
-          children: [
-            TextField(
-              controller: _controller,
-              decoration: InputDecoration(
-                hintText: 'Escribe algo aqui 1'
-              ),
-              onEditingComplete: (){
-                setState(() {
-                  _controller.text = 'EditComplete 1';
-                  print('1');
-                });
-              },
-              // focusNode: FocusScope.of(context).unfocus(),
-                onTap: (){
-
-                },
-            
-
-            ),
-            TextFormField(
-              decoration: InputDecoration(
-                hintText: 'Escribe algo aqui 2',
-              ),
-              
-              
-            ),
-          ],
+        appBar: AppBar(
+          title: const Text('Informe'),
         ),
-      )),
-    );
-  }
-}
-/*
-TextEditingController _controller = TextEditingController();
-
-TextFormField(
-  controller(
-    hintText: 'Escribe algo aquí...',
-  ),
-  onEditingComplete: () {
-    setState(() {
-      _controller.text = 'Texto agregado';
-    });
-  },
-  onFieldSubmitted: (value) {
-    setState(() {
-      _controller.text = 'Texto agregado';
-    });
-  },
-)
-
- */
-
-
-class Campo extends StatelessWidget {
-  const Campo({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-
-    );
+        body: SingleChildScrollView(
+            scrollDirection: Axis.horizontal, child: DatosWidget(personas: widget.personas)));
   }
 }
 
 class DatosWidget extends StatefulWidget {
+  final List<Persona> personas;
+  
   const DatosWidget({
-    super.key,
+    super.key, required this.personas,
   });
 
   @override
@@ -100,6 +37,7 @@ class DatosWidget extends StatefulWidget {
 }
 
 class _DatosWidgetState extends State<DatosWidget> {
+
   @override
   Widget build(BuildContext context) {
     return DataTable(
@@ -111,7 +49,7 @@ class _DatosWidgetState extends State<DatosWidget> {
         DataColumn(label: Text('Revisitas')),
         DataColumn(label: Text('Estudios')),
       ],
-      rows: personas
+      rows: widget.personas
           .map((persona) => DataRow(cells: [
                 DataCell(TextFormField(
                   initialValue: persona.nombre,
@@ -120,17 +58,15 @@ class _DatosWidgetState extends State<DatosWidget> {
                 DataCell(TextFormField(
                   initialValue: persona.publicaciones.toString(),
                   keyboardType: TextInputType.number,
-                  onSaved: (value) {
-                    if (value == null || value.isEmpty) {
+                  onChanged: (value) {
+                    if (value.isEmpty) {
                       persona.publicaciones = 0;
                     } else {
                       persona.publicaciones = int.parse(value);
                     }
                   },
-                  onEditingComplete: (){
-                    setState(() {
-                      
-                    });
+                  onEditingComplete: () {
+                    setState(() {});
                   },
                 )),
                 DataCell(TextFormField(
@@ -160,4 +96,3 @@ class _DatosWidgetState extends State<DatosWidget> {
     );
   }
 }
-

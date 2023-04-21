@@ -1,22 +1,8 @@
-class Persona {
-  String nombre;
-  int publicaciones;
-  int videos;
-  int horas;
-  int revisitas;
-  int estudios;
 
-  Persona({
-    required this.nombre,
-    required this.publicaciones,
-    required this.videos,
-    required this.horas,
-    required this.revisitas,
-    required this.estudios,
-  });
-}
 
-List<Persona> personas = [
+import 'package:person_ia/datos/persona.dart';
+
+List<Persona> personasBD = [
     Persona(
       nombre: 'Juan',
       publicaciones: 10,
@@ -35,6 +21,46 @@ List<Persona> personas = [
     ),
     Persona(
       nombre: 'Pedro',
+      publicaciones: 8,
+      videos: 3,
+      horas: 15,
+      revisitas: 2,
+      estudios: 1,
+    ),
+    Persona(
+      nombre: 'Angela',
+      publicaciones: 8,
+      videos: 3,
+      horas: 15,
+      revisitas: 2,
+      estudios: 1,
+    ),
+    Persona(
+      nombre: 'Juan',
+      publicaciones: 8,
+      videos: 3,
+      horas: 15,
+      revisitas: 2,
+      estudios: 1,
+    ),
+    Persona(
+      nombre: 'Silvia',
+      publicaciones: 8,
+      videos: 3,
+      horas: 15,
+      revisitas: 2,
+      estudios: 1,
+    ),
+    Persona(
+      nombre: 'Sofia',
+      publicaciones: 8,
+      videos: 3,
+      horas: 15,
+      revisitas: 2,
+      estudios: 1,
+    ),
+    Persona(
+      nombre: 'Maria',
       publicaciones: 8,
       videos: 3,
       horas: 15,

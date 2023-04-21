@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:person_ia/datos/datos.dart';
 import 'package:person_ia/widgets/tabla.dart';
 
 void main() {
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const Tabla(),
+      home: Tabla(personas: personasBD),
     );
   }
 }
