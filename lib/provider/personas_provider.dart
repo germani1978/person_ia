@@ -25,6 +25,7 @@ class MyData extends ChangeNotifier {
     notifyListeners();
   }
 
+  //borrar lista de personas
   void del() {
     _personas = [];
   }

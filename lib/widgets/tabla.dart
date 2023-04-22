@@ -14,7 +14,7 @@ class Tabla extends StatefulWidget {
 }
 
 class _TablaState extends State<Tabla> {
-  @override
+  @override 
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
@@ -96,3 +96,4 @@ class _DatosWidgetState extends State<DatosWidget> {
     );
   }
 }
+

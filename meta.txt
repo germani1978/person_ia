@@ -1,0 +1,6 @@
+1 Crear la Tabla.
+2 Cargar del almacenamiento
+3 Crear boton agregar
+4 Crear boton borrar
+5 Crear boton compartir
+6 Crear boton salvar
