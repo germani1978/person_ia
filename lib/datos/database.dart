@@ -70,13 +70,20 @@ class DatabaseHelper {
   Future<List<Persona>> queryAll() async {
     Database db = await instance.database;
     List<Map<String, dynamic>> maps = await db.query(table);
-    return List.generate(maps.length, (i) {
-      return Persona.fromMap(maps[i]);
-    });
+    // return maps.map((map) => Persona.fromMap(map)).toList();
+    return List.generate(maps.length, (i) => Persona.fromMap(maps[i]));
   }
 
   Future<int> delete(int id) async {
     Database db = await instance.database;
     return await db.delete(table, where: '$columnId = ?', whereArgs: [id]);
   }
+
+  deleteAll() async {
+    Database db = await instance.database;
+    db.delete(table);
+  }
+
+
+
 }

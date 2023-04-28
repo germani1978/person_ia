@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:person_ia/datos/datos.dart';
 import 'package:person_ia/provider/personas_provider.dart';
-import 'package:person_ia/widgets/tabla.dart';
+import 'package:person_ia/widgets/screen_tabla.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(ChangeNotifierProvider(
+    create: (context) => MyData(),
+    child: const MyApp())
+  );
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
+  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -19,10 +21,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: ChangeNotifierProvider(
-        create: (context) => MyData(),
-        child: Tabla(personas: personasBD),
-      ),
+      home: ScreenTabla(),
     );
   }
 }

@@ -1,0 +1,251 @@
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_element, unused_local_variable
+
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:person_ia/datos/database.dart';
+import 'package:person_ia/datos/persona.dart';
+import 'package:person_ia/provider/personas_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
+
+class ScreenTabla extends StatelessWidget {
+  const ScreenTabla({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      appBar: AppBar(title: const Text('Informe')),
+      body: SingleChildScrollView(
+          scrollDirection: Axis.horizontal, child: ContenedorTabla()),
+      floatingActionButton: _botones(context),
+    );
+  }
+
+  SpeedDial _botones(BuildContext context) {
+    return SpeedDial(
+      animatedIcon: AnimatedIcons.menu_close,
+      children: [
+        SpeedDialChild(
+          child: Icon(Icons.accessibility),
+          label: 'Agregar Persona',
+          onTap: () {
+            _cardToAddPerson(context);
+          },
+        ),
+        SpeedDialChild(
+          child: Icon(Icons.delete),
+          label: 'Borrar todo',
+          onTap: () {
+            Provider.of<MyData>(context, listen: false).del();
+          },
+        ),
+        SpeedDialChild(
+          child: Icon(Icons.share),
+          label: 'Compartir',
+          onTap: () {
+            _compartirLista();
+          },
+        ),
+        SpeedDialChild(
+          child: Icon(Icons.save),
+          label: 'Salvar',
+          onTap: () {},
+        ),
+      ],
+    );
+  }
+
+  void _compartirLista() async {
+    final personas = await DatabaseHelper.instance.queryAll();
+    String jsonString = jsonEncode(personas.map((p) => p.toMap()).toList());
+    await Share.share(jsonString, subject: 'Compartir lista');
+  }
+
+  _cardToAddPerson(BuildContext context) {
+    final Persona persona = Persona();
+
+    return showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (context) {
+        return Container(
+          padding: EdgeInsets.all(20),
+          height: MediaQuery.of(context).size.height * 0.8,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: _inputPerson(persona, context),
+          ),
+        );
+      },
+    );
+  }
+
+  List<Widget> _inputPerson(Persona persona, BuildContext context) {
+    return <Widget>[
+      _inputName(persona),
+      _inputNumero(persona, 'Ingresa el número de publicaciones', "p"),
+      _inputNumero(persona, 'Ingresa el número de videos', "v"),
+      _inputNumero(persona, 'Ingresa el número de horas', "h"),
+      _inputNumero(persona, 'Ingresa el número de revisitas', "r"),
+      _inputNumero(persona, 'Ingresa el número de estudios', "e"),
+      SizedBox(height: 20.0),
+      ElevatedButton(
+        //Boton agregar
+        onPressed: () {
+          Provider.of<MyData>(context, listen: false).addPersona(persona);
+          Navigator.of(context).pop();
+        },
+        child: Text('Guardar'),
+      ),
+    ];
+  }
+
+  TextField _inputName(Persona persona) {
+    return TextField(
+      decoration: InputDecoration(
+        hintText: 'Ingresa el nombre',
+      ),
+      onChanged: (value) {
+        if (value.isEmpty) persona.nombre = "";
+        persona.nombre = value;
+      },
+    );
+  }
+
+  TextField _inputNumero(Persona persona, String hintText, String campo) {
+    return TextField(
+      keyboardType: TextInputType.number,
+      decoration: InputDecoration(hintText: hintText),
+      onChanged: (value) {
+        if (int.tryParse(value) != null) {
+          switch (campo) {
+            case "p":
+              (persona.publicaciones = int.parse(value));
+              break;
+            case "v":
+              (persona.videos = int.parse(value));
+              break;
+            case "h":
+              (persona.horas = int.parse(value));
+              break;
+            case "r":
+              (persona.revisitas = int.parse(value));
+              break;
+            case "e":
+              (persona.estudios = int.parse(value));
+              break;
+            default:
+          }
+        }
+      },
+    );
+  }
+}
+
+class ContenedorTabla extends StatefulWidget {
+  const ContenedorTabla({super.key});
+
+  @override
+  State<ContenedorTabla> createState() => _ContenedorTablaState();
+}
+
+class _ContenedorTablaState extends State<ContenedorTabla> {
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<Persona>>(
+        future: Provider.of<MyData>(context).personas,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: Center(child: CircularProgressIndicator()));
+          }
+          return Tabla(personas: snapshot.data!);
+        });
+  }
+}
+
+class Tabla extends StatelessWidget {
+  const Tabla({
+    super.key,
+    required this.personas,
+  });
+
+  final List<Persona> personas;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      child: DataTable(
+        columns: [
+          DataColumn(label: Text('Nombre')),
+          DataColumn(label: Text('Publicaciones')),
+          DataColumn(label: Text('Videos')),
+          DataColumn(label: Text('Horas')),
+          DataColumn(label: Text('Revisitas')),
+          DataColumn(label: Text('Estudios')),
+        ],
+        rows: personas.map((persona) => _filaCeldasTabla(persona, context)).toList(),
+      ),
+    );
+  }
+
+  DataRow _filaCeldasTabla(Persona persona, BuildContext context) {
+    return DataRow(cells: [
+      DataCell(TextFormField(
+        initialValue: persona.nombre,
+        onChanged: (value) => persona.nombre = value,
+      )),
+      DataCell(TextFormField(
+          initialValue: persona.publicaciones.toString(),
+          keyboardType: TextInputType.number,
+          onChanged: (value) {
+            persona.publicaciones = int.tryParse(value) ?? 0;
+          })),
+      DataCell(TextFormField(
+          initialValue: persona.videos.toString(),
+          keyboardType: TextInputType.number,
+          onChanged: (value) {
+            persona.videos = int.tryParse(value) ?? 0;
+          })),
+      DataCell(TextFormField(
+          initialValue: persona.horas.toString(),
+          keyboardType: TextInputType.number,
+          onChanged: (value) {
+            persona.horas = int.tryParse(value) ?? 0;
+          })),
+      DataCell(TextFormField(
+          initialValue: persona.revisitas.toString(),
+          keyboardType: TextInputType.number,
+          onChanged: (value) {
+            persona.revisitas = int.tryParse(value) ?? 0;
+          })),
+      DataCell(TextFormField(
+          initialValue: persona.estudios.toString(),
+          keyboardType: TextInputType.number,
+          onChanged: (value) {
+            persona.estudios = int.tryParse(value) ?? 0;
+            Provider.of<MyData>(context).addPersona(persona);
+          })),
+    ]);
+  }
+}
+
+
+
+
+// void shareFile(String filePath) async {
+//   // Crear un objeto File para el archivo que se va a compartir
+//   final file = File(filePath);
+  
+//   // Comprobar si el archivo existe
+//   if (!await file.exists()) {
+//     return;
+//   }
+  
+//   // Compartir el archivo utilizando la función share de share_plus
+//   await Share.shareFiles([filePath], text: 'Compartir archivo');
+// }

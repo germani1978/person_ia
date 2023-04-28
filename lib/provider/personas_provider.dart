@@ -1,33 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:person_ia/datos/database.dart';
 import 'package:person_ia/datos/persona.dart';
 
 
 class MyData extends ChangeNotifier {
-  List<Persona> _personas = [];
 
-  get personas => _personas;
+  Future<List<Persona>> get personas async {
+    return await DatabaseHelper.instance.queryAll(); 
+  } 
 
-  //agregar una lista de personas
-  void addPersons( List<Persona> personas) {
-    _personas = personas;
+  Future<void> addPersonas( List<Persona> personas)  async {
+    for (var persona in personas)  { 
+      await DatabaseHelper.instance.insert(persona);
+    }
     notifyListeners();
   }
 
-  //agrega una persona
-  void addPersona( Persona persona) {
-    _personas.add(persona);
+  void addPersona( Persona persona) async{
+    await DatabaseHelper.instance.insert(persona);
     notifyListeners();
   }
 
-  //cambia una persona
-  void chagePerson({required int index, required Persona persona}) {
-    _personas[index] = persona;
-    notifyListeners();
-  }
-
-  //borrar lista de personas
   void del() {
-    _personas = [];
+    DatabaseHelper.instance.deleteAll();
+    notifyListeners();
   }
 
 }

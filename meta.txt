@@ -1,6 +1,6 @@
 1 Crear la Tabla.
-2 Cargar del almacenamiento
-3 Crear boton agregar
-4 Crear boton borrar
-5 Crear boton compartir
-6 Crear boton salvar
+2 Cargar con sqflite los datos almacenados. 
+3 boton agregar 
+4 boton borrar
+5 boton compartir
+6 boton salvar con sqlite

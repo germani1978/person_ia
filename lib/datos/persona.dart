@@ -7,12 +7,13 @@ class Persona {
   int estudios;
 
   Persona({
-    required this.nombre,
-    required this.publicaciones,
-    required this.videos,
-    required this.horas,
-    required this.revisitas,
-    required this.estudios,
+    int? id,
+    this.nombre = "",
+    this.publicaciones = 0,
+    this.videos = 0,
+    this.horas = 0,
+    this.revisitas = 0,
+    this.estudios = 0,
   });
 
   Map<String, dynamic> toMap() {
