@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_element, unused_local_variable
-
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -17,7 +15,7 @@ class ScreenTabla extends StatelessWidget {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(title: const Text('Informe')),
-      body: SingleChildScrollView(
+      body: const SingleChildScrollView(
           scrollDirection: Axis.horizontal, child: ContenedorTabla()),
       floatingActionButton: _botones(context),
     );
@@ -28,28 +26,28 @@ class ScreenTabla extends StatelessWidget {
       animatedIcon: AnimatedIcons.menu_close,
       children: [
         SpeedDialChild(
-          child: Icon(Icons.accessibility),
+          child: const Icon(Icons.accessibility),
           label: 'Agregar Persona',
           onTap: () {
             _cardToAddPerson(context);
           },
         ),
         SpeedDialChild(
-          child: Icon(Icons.delete),
+          child: const Icon(Icons.delete),
           label: 'Borrar todo',
           onTap: () {
             Provider.of<MyData>(context, listen: false).del();
           },
         ),
         SpeedDialChild(
-          child: Icon(Icons.share),
+          child: const Icon(Icons.share),
           label: 'Compartir',
           onTap: () {
             _compartirLista();
           },
         ),
         SpeedDialChild(
-          child: Icon(Icons.save),
+          child: const Icon(Icons.save),
           label: 'Salvar',
           onTap: () {},
         ),
@@ -71,7 +69,7 @@ class ScreenTabla extends StatelessWidget {
       context: context,
       builder: (context) {
         return Container(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           height: MediaQuery.of(context).size.height * 0.8,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,21 +88,21 @@ class ScreenTabla extends StatelessWidget {
       _inputNumero(persona, 'Ingresa el número de horas', "h"),
       _inputNumero(persona, 'Ingresa el número de revisitas', "r"),
       _inputNumero(persona, 'Ingresa el número de estudios', "e"),
-      SizedBox(height: 20.0),
+      const SizedBox(height: 20.0),
       ElevatedButton(
         //Boton agregar
         onPressed: () {
           Provider.of<MyData>(context, listen: false).addPersona(persona);
           Navigator.of(context).pop();
         },
-        child: Text('Guardar'),
+        child: const Text('Guardar'),
       ),
     ];
   }
 
   TextField _inputName(Persona persona) {
     return TextField(
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
         hintText: 'Ingresa el nombre',
       ),
       onChanged: (value) {
@@ -160,7 +158,7 @@ class _ContenedorTablaState extends State<ContenedorTabla> {
           if (!snapshot.hasData) {
             return SizedBox(
                 width: MediaQuery.of(context).size.width,
-                child: Center(child: CircularProgressIndicator()));
+                child: const Center(child: CircularProgressIndicator()));
           }
           return Tabla(personas: snapshot.data!);
         });
@@ -168,7 +166,9 @@ class _ContenedorTablaState extends State<ContenedorTabla> {
 }
 
 class Tabla extends StatelessWidget {
-  const Tabla({
+  final _formKey = GlobalKey<FormState>();
+
+  Tabla({
     super.key,
     required this.personas,
   });
@@ -179,16 +179,23 @@ class Tabla extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
-      child: DataTable(
-        columns: [
-          DataColumn(label: Text('Nombre')),
-          DataColumn(label: Text('Publicaciones')),
-          DataColumn(label: Text('Videos')),
-          DataColumn(label: Text('Horas')),
-          DataColumn(label: Text('Revisitas')),
-          DataColumn(label: Text('Estudios')),
-        ],
-        rows: personas.map((persona) => _filaCeldasTabla(persona, context)).toList(),
+      child: Form(
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        key: _formKey,
+        child: DataTable(
+          // columnSpacing: 25,
+          columns: const [
+            DataColumn(label: Text('Nombre')),
+            DataColumn(label: Text('Public')),
+            DataColumn(label: Text('Video')),
+            DataColumn(label: Text('Horas')),
+            DataColumn(label: Text('Revis')),
+            DataColumn(label: Text('Estud')),
+          ],
+          rows: personas
+              .map((persona) => _filaCeldasTabla(persona, context))
+              .toList(),
+        ),
       ),
     );
   }
@@ -199,53 +206,56 @@ class Tabla extends StatelessWidget {
         initialValue: persona.nombre,
         onChanged: (value) => persona.nombre = value,
       )),
-      DataCell(TextFormField(
-          initialValue: persona.publicaciones.toString(),
-          keyboardType: TextInputType.number,
-          onChanged: (value) {
-            persona.publicaciones = int.tryParse(value) ?? 0;
-          })),
-      DataCell(TextFormField(
-          initialValue: persona.videos.toString(),
-          keyboardType: TextInputType.number,
-          onChanged: (value) {
-            persona.videos = int.tryParse(value) ?? 0;
-          })),
-      DataCell(TextFormField(
-          initialValue: persona.horas.toString(),
-          keyboardType: TextInputType.number,
-          onChanged: (value) {
-            persona.horas = int.tryParse(value) ?? 0;
-          })),
-      DataCell(TextFormField(
-          initialValue: persona.revisitas.toString(),
-          keyboardType: TextInputType.number,
-          onChanged: (value) {
-            persona.revisitas = int.tryParse(value) ?? 0;
-          })),
-      DataCell(TextFormField(
-          initialValue: persona.estudios.toString(),
-          keyboardType: TextInputType.number,
-          onChanged: (value) {
-            persona.estudios = int.tryParse(value) ?? 0;
-            Provider.of<MyData>(context).addPersona(persona);
-          })),
+      cellTabla(persona, context, persona.publicaciones, "publicaciones"),
+      cellTabla(persona, context, persona.videos, "videos"),
+      cellTabla(persona, context, persona.horas, "horas"),
+      cellTabla(persona, context, persona.revisitas, "revisitas"),
+      cellTabla(persona, context, persona.estudios, "estudios"),
     ]);
   }
+
+  DataCell cellTabla(
+      Persona persona, BuildContext context, int valorInicial, String campo) {
+    return DataCell(TextFormField(
+      initialValue: valorInicial.toString(),
+      keyboardType: TextInputType.number,
+      onChanged: (value) {
+        switch (campo) {
+          case "publicaciones":
+            persona.publicaciones = int.tryParse(value) ?? 0;
+            break;
+          case "videos":
+            persona.publicaciones = int.tryParse(value) ?? 0;
+            break;
+          case "horas":
+            persona.publicaciones = int.tryParse(value) ?? 0;
+            break;
+          case "revisitas":
+            persona.publicaciones = int.tryParse(value) ?? 0;
+            break;
+          case "estudios":
+            persona.publicaciones = int.tryParse(value) ?? 0;
+            break;
+        }
+
+        if (_formKey.currentState!.validate()) {
+          // Provider.of<MyData>(context).addPersona(persona);
+        }
+
+        // 
+      },
+      validator: validacion,
+    ));
+  }
+
+  String? validacion(value) {
+    if (value == null || value.isEmpty) {
+      return null;
+    }
+    final RegExp regExp = RegExp(r'^[0-9]+$');
+    if (!regExp.hasMatch(value)) {
+      return 'Error';
+    }
+    return null;
+  }
 }
-
-
-
-
-// void shareFile(String filePath) async {
-//   // Crear un objeto File para el archivo que se va a compartir
-//   final file = File(filePath);
-  
-//   // Comprobar si el archivo existe
-//   if (!await file.exists()) {
-//     return;
-//   }
-  
-//   // Compartir el archivo utilizando la función share de share_plus
-//   await Share.shareFiles([filePath], text: 'Compartir archivo');
-// }

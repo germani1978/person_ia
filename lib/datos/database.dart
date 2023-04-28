@@ -84,6 +84,15 @@ class DatabaseHelper {
     db.delete(table);
   }
 
+  Future<void> update(Persona persona) async {
+    Database db = await instance.database;
+    db.update(table, {
+
+    },
+    where: 'id = ?',
+    whereArgs: [persona.id]);
+  }
+
 
 
 }

@@ -5,9 +5,9 @@ class Persona {
   int horas;
   int revisitas;
   int estudios;
+  int? id;
 
   Persona({
-    int? id,
     this.nombre = "",
     this.publicaciones = 0,
     this.videos = 0,
@@ -36,5 +36,42 @@ class Persona {
       revisitas: map['revisitas'],
       estudios: map['estudios'],
     );
+  }
+
+  void setField(String fieldName, int value) {
+    switch (fieldName) {
+      case 'publicaciones':
+        publicaciones = value;
+        break;
+      case 'videos':
+        videos = value;
+        break;
+      case 'horas':
+        horas = value;
+        break;
+      case 'revisitas':
+        revisitas = value;
+        break;
+      case 'estudios':
+        estudios = value;
+        break;
+    }
+  }
+
+   int getField(String fieldName) {
+    switch(fieldName) {
+      case 'publicaciones':
+        return publicaciones;
+      case 'videos':
+        return videos;
+      case 'horas':
+        return horas;
+      case 'revisitas':
+        return revisitas;
+      case 'estudios':
+        return estudios;
+      default:
+        return 0;
+    }
   }
 }
