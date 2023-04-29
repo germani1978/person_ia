@@ -183,7 +183,7 @@ class Tabla extends StatelessWidget {
         autovalidateMode: AutovalidateMode.onUserInteraction,
         key: _formKey,
         child: DataTable(
-          // columnSpacing: 25,
+          columnSpacing: 25,
           columns: const [
             DataColumn(label: Text('Nombre')),
             DataColumn(label: Text('Public')),

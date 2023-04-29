@@ -5,9 +5,10 @@ class Persona {
   int horas;
   int revisitas;
   int estudios;
-  int? id;
+  int id;
 
   Persona({
+    this.id = -1,
     this.nombre = "",
     this.publicaciones = 0,
     this.videos = 0,
@@ -28,7 +29,8 @@ class Persona {
   }
 
   factory Persona.fromMap(Map<String, dynamic> map) {
-    return Persona(
+    Persona persona = Persona(
+      id:map['_id'],
       nombre: map['nombre'],
       publicaciones: map['publicaciones'],
       videos: map['videos'],
@@ -36,6 +38,7 @@ class Persona {
       revisitas: map['revisitas'],
       estudios: map['estudios'],
     );
+    return persona;
   }
 
   void setField(String fieldName, int value) {

@@ -70,7 +70,7 @@ class DatabaseHelper {
   Future<List<Persona>> queryAll() async {
     Database db = await instance.database;
     List<Map<String, dynamic>> maps = await db.query(table);
-    // return maps.map((map) => Persona.fromMap(map)).toList();
+    print(maps);
     return List.generate(maps.length, (i) => Persona.fromMap(maps[i]));
   }
 
