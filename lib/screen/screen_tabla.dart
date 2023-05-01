@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -115,7 +117,9 @@ class ScreenTabla extends StatelessWidget {
   TextField _inputNumero(Persona persona, String hintText, String campo) {
     return TextField(
       keyboardType: TextInputType.number,
-      decoration: InputDecoration(hintText: hintText),
+      decoration: InputDecoration(
+        hintText: hintText,
+      ),
       onChanged: (value) {
         if (int.tryParse(value) != null) {
           switch (campo) {
@@ -183,15 +187,12 @@ class Tabla extends StatelessWidget {
         autovalidateMode: AutovalidateMode.onUserInteraction,
         key: _formKey,
         child: DataTable(
-          columnSpacing: 25,
-          columns: const [
-            DataColumn(label: Text('Nombre')),
-            DataColumn(label: Text('Public')),
-            DataColumn(label: Text('Video')),
-            DataColumn(label: Text('Horas')),
-            DataColumn(label: Text('Revis')),
-            DataColumn(label: Text('Estud')),
-          ],
+          
+          columnSpacing: 18,
+          dataRowHeight: 56,
+          headingRowHeight: 64.0,
+          dividerThickness: 1.0,
+          columns: _columunTitle,
           rows: personas
               .map((persona) => _filaCeldasTabla(persona, context))
               .toList(),
@@ -200,12 +201,20 @@ class Tabla extends StatelessWidget {
     );
   }
 
+  List<DataColumn> get _columunTitle {
+    return const [
+      DataColumn(label: Text('Nombre')),
+      DataColumn(label: Text('Public ')),
+      DataColumn(label: Text('Videos ')),
+      DataColumn(label: Text('Horas  ')),
+      DataColumn(label: Text('Revisi ')),
+      DataColumn(label: Text('Estudu ')),
+    ];
+  }
+
   DataRow _filaCeldasTabla(Persona persona, BuildContext context) {
     return DataRow(cells: [
-      DataCell(TextFormField(
-        initialValue: persona.nombre,
-        onChanged: (value) => persona.nombre = value,
-      )),
+      cellNameTabla(persona),
       cellTabla(persona, context, persona.publicaciones, "publicaciones"),
       cellTabla(persona, context, persona.videos, "videos"),
       cellTabla(persona, context, persona.horas, "horas"),
@@ -214,38 +223,74 @@ class Tabla extends StatelessWidget {
     ]);
   }
 
+  DataCell cellNameTabla(Persona persona) {
+    return DataCell(
+      TextFormField(
+        initialValue: persona.nombre,
+        onChanged: (value) => persona.nombre = value,
+        decoration: InputDecoration(
+          border: UnderlineInputBorder(
+            borderSide: BorderSide.none,
+          ),
+        ),
+      ),
+    );
+  }
+
   DataCell cellTabla(
       Persona persona, BuildContext context, int valorInicial, String campo) {
-    return DataCell(TextFormField(
-      initialValue: valorInicial.toString(),
-      keyboardType: TextInputType.number,
-      onChanged: (value) {
-        switch (campo) {
-          case "publicaciones":
-            persona.publicaciones = int.tryParse(value) ?? 0;
-            break;
-          case "videos":
-            persona.publicaciones = int.tryParse(value) ?? 0;
-            break;
-          case "horas":
-            persona.publicaciones = int.tryParse(value) ?? 0;
-            break;
-          case "revisitas":
-            persona.publicaciones = int.tryParse(value) ?? 0;
-            break;
-          case "estudios":
-            persona.publicaciones = int.tryParse(value) ?? 0;
-            break;
-        }
+    return DataCell(
+      
+      TextFormField(
+        textAlign: TextAlign.center,
+         style: TextStyle(
+            color: Colors.black,
+            fontSize: 16.0,
+          ),
+        decoration: _decoracionInputDataCell(),
+        initialValue: valorInicial.toString(),
+        keyboardType: TextInputType.number,
+        onChanged: (value) {
+          switch (campo) {
+            case "publicaciones":
+              persona.publicaciones = int.tryParse(value) ?? 0;
+              break;
+            case "videos":
+              persona.publicaciones = int.tryParse(value) ?? 0;
+              break;
+            case "horas":
+              persona.publicaciones = int.tryParse(value) ?? 0;
+              break;
+            case "revisitas":
+              persona.publicaciones = int.tryParse(value) ?? 0;
+              break;
+            case "estudios":
+              persona.publicaciones = int.tryParse(value) ?? 0;
+              break;
+          }
 
-        if (_formKey.currentState!.validate()) {
-          // Provider.of<MyData>(context).addPersona(persona);
-        }
+          if (_formKey.currentState!.validate()) {
+            // Provider.of<MyData>(context).addPersona(persona);
+          }
 
-        // 
-      },
-      validator: validacion,
-    ));
+          //
+        },
+        validator: validacion,
+      ),
+    );
+  }
+
+  InputDecoration _decoracionInputDataCell() {
+    return InputDecoration(
+        hintText: "0",
+        hintStyle: TextStyle(
+          color: Colors.grey[500],
+          fontStyle: FontStyle.italic,
+        ),
+        border: UnderlineInputBorder(
+          borderSide: BorderSide.none,
+        ),
+      );
   }
 
   String? validacion(value) {
