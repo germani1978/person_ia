@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:person_ia/provider/personas_provider.dart';
-import 'package:person_ia/widgets/screen_tabla.dart';
+import 'package:person_ia/screen/screen_tabla.dart';
 import 'package:provider/provider.dart';
 
 void main() {
