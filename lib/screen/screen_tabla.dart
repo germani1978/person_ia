@@ -204,11 +204,11 @@ class Tabla extends StatelessWidget {
   List<DataColumn> get _columunTitle {
     return const [
       DataColumn(label: Text('Nombre')),
-      DataColumn(label: Text('Public ')),
-      DataColumn(label: Text('Videos ')),
-      DataColumn(label: Text('Horas  ')),
-      DataColumn(label: Text('Revisi ')),
-      DataColumn(label: Text('Estudu ')),
+      DataColumn(label: Text('Public')),
+      DataColumn(label: Text('Videos')),
+      DataColumn(label: Text('Horas')),
+      DataColumn(label: Text('Revisi')),
+      DataColumn(label: Text('Estud')),
     ];
   }
 
