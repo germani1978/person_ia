@@ -1,13 +1,16 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, unused_element, unused_local_variable, avoid_print
 
 import 'dart:convert';
+import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:person_ia/datos/database.dart';
 import 'package:person_ia/datos/persona.dart';
 import 'package:person_ia/provider/personas_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:share_plus/share_plus.dart';
+import 'package:share/share.dart';
+
 
 class ScreenTabla extends StatelessWidget {
   const ScreenTabla({super.key});
@@ -42,20 +45,31 @@ class ScreenTabla extends StatelessWidget {
           },
         ),
         SpeedDialChild(
-          child: const Icon(Icons.share),
-          label: 'Compartir',
-          onTap: () {
-            _compartirLista();
-          },
+          child: const Icon(Icons.save),
+          label: 'Cargar',
+          onTap: _cargarFicheroJson,
         ),
         SpeedDialChild(
-          child: const Icon(Icons.save),
-          label: 'Salvar',
-          onTap: () {},
+          child: const Icon(Icons.share),
+          label: 'Compartir',
+          onTap: () async {
+            _compartirLista();
+          },
         ),
       ],
     );
   }
+
+  void _cargarFicheroJson() async {
+          //Cargar un fichero externo
+          FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.any);
+          if (result != null) {
+            File file = File(result.files.single.path!);
+            print('ya');
+          } else {
+            // No eligio nada
+          }
+        }
 
   void _compartirLista() async {
     final personas = await DatabaseHelper.instance.queryAll();
@@ -271,9 +285,8 @@ class Tabla extends StatelessWidget {
 
           if (_formKey.currentState!.validate()) {
             // Provider.of<MyData>(context).addPersona(persona);
+            //si hay algun cambio en la celda y no hay error se puede guardar aqui en sqlite
           }
-
-          //
         },
         validator: validacion,
       ),
