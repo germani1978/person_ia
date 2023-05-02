@@ -1,19 +1,53 @@
 // ignore_for_file: prefer_const_constructors, unused_element, unused_local_variable, avoid_print
 
-import 'dart:convert';
-import 'dart:io';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+// import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+import 'dart:convert';
+import 'package:provider/provider.dart';
+
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'package:person_ia/datos/database.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:receive_sharing_intent/receive_sharing_intent.dart';
+
+
 import 'package:person_ia/datos/persona.dart';
 import 'package:person_ia/provider/personas_provider.dart';
-import 'package:provider/provider.dart';
-import 'package:share/share.dart';
+import 'package:person_ia/datos/database.dart';
 
-
-class ScreenTabla extends StatelessWidget {
+class ScreenTabla extends StatefulWidget {
   const ScreenTabla({super.key});
+
+  @override
+  State<ScreenTabla> createState() => _ScreenTablaState();
+}
+
+class _ScreenTablaState extends State<ScreenTabla> {
+
+@override
+void initState() {
+  super.initState();
+  // Registra un IntentReceiver para recibir contenido compartido
+  ReceiveSharingIntent.getMediaStream().listen((List<SharedMediaFile> files) {
+    // Maneja el archivo compartido aquí
+    handleSharedFile(files);
+  });
+}
+
+void handleSharedFile(List<SharedMediaFile> files) {
+  // Verifica si hay algún archivo compartido
+  if (files.isNotEmpty) {
+    // Obtén el primer archivo compartido
+    final file = files[0].path;
+    // Maneja el archivo aquí
+    print('aqui');
+    // ...
+  }
+}
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -61,20 +95,27 @@ class ScreenTabla extends StatelessWidget {
   }
 
   void _cargarFicheroJson() async {
-          //Cargar un fichero externo
-          FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.any);
-          if (result != null) {
-            File file = File(result.files.single.path!);
-            print('ya');
-          } else {
-            // No eligio nada
-          }
-        }
+    //Cargar un fichero externo
+    FilePickerResult? result =
+        await FilePicker.platform.pickFiles(type: FileType.any);
+    if (result != null) {
+      File file = File(result.files.single.path!);
+      print('ya');
+    } else {
+      // No eligio nada
+    }
+  }
 
   void _compartirLista() async {
     final personas = await DatabaseHelper.instance.queryAll();
     String jsonString = jsonEncode(personas.map((p) => p.toMap()).toList());
-    await Share.share(jsonString, subject: 'Compartir lista');
+    //Share.share(jsonString);
+
+    final bytes = utf8.encode(jsonString);
+    // await Share.shareXFiles(
+    // );
+
+
   }
 
   _cardToAddPerson(BuildContext context) {
@@ -201,7 +242,6 @@ class Tabla extends StatelessWidget {
         autovalidateMode: AutovalidateMode.onUserInteraction,
         key: _formKey,
         child: DataTable(
-          
           columnSpacing: 18,
           dataRowHeight: 56,
           headingRowHeight: 64.0,
@@ -254,13 +294,12 @@ class Tabla extends StatelessWidget {
   DataCell cellTabla(
       Persona persona, BuildContext context, int valorInicial, String campo) {
     return DataCell(
-      
       TextFormField(
         textAlign: TextAlign.center,
-         style: TextStyle(
-            color: Colors.black,
-            fontSize: 16.0,
-          ),
+        style: TextStyle(
+          color: Colors.black,
+          fontSize: 16.0,
+        ),
         decoration: _decoracionInputDataCell(),
         initialValue: valorInicial.toString(),
         keyboardType: TextInputType.number,
@@ -295,15 +334,15 @@ class Tabla extends StatelessWidget {
 
   InputDecoration _decoracionInputDataCell() {
     return InputDecoration(
-        hintText: "0",
-        hintStyle: TextStyle(
-          color: Colors.grey[500],
-          fontStyle: FontStyle.italic,
-        ),
-        border: UnderlineInputBorder(
-          borderSide: BorderSide.none,
-        ),
-      );
+      hintText: "0",
+      hintStyle: TextStyle(
+        color: Colors.grey[500],
+        fontStyle: FontStyle.italic,
+      ),
+      border: UnderlineInputBorder(
+        borderSide: BorderSide.none,
+      ),
+    );
   }
 
   String? validacion(value) {
