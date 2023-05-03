@@ -118,12 +118,12 @@ void handleSharedFile(List<SharedMediaFile> files) {
     String jsonString = jsonEncode(personas.map((p) => p.toMap()).toList());
     //Share.share(jsonString);
 
-    List<int> bytes = personas.map((person) => person.toBytes()).expand((byteList) => byteList).toList();
+    List<int> bytes = personas.map((person) => person.toBytes()).expand((byteList) => byteList).toList().cast<int>();
 
     File file = await getFile();
     await file.writeAsBytes(bytes);  
   
-  
+    Share.shareXFiles([XFile(file.path)]);
   }
 
   _cardToAddPerson(BuildContext context) {

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class Persona {
   String nombre;
   int publicaciones;
@@ -40,6 +42,11 @@ class Persona {
     );
     return persona;
   }
+
+  List<int> toBytes() {
+  List<int> bytes = utf8.encode(json.encode(this.toMap()));
+  return bytes;
+}
 
   void setField(String fieldName, int value) {
     switch (fieldName) {
