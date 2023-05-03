@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, unused_element, unused_local_variable, avoid_print
 
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 // import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'dart:convert';
@@ -106,16 +107,23 @@ void handleSharedFile(List<SharedMediaFile> files) {
     }
   }
 
+  Future<File> getFile() async {
+      Directory directory = await getApplicationDocumentsDirectory();
+      String path = directory.path;
+      return File('$path/file.gba');
+    }
+
   void _compartirLista() async {
     final personas = await DatabaseHelper.instance.queryAll();
     String jsonString = jsonEncode(personas.map((p) => p.toMap()).toList());
     //Share.share(jsonString);
 
-    final bytes = utf8.encode(jsonString);
-    // await Share.shareXFiles(
-    // );
+    List<int> bytes = personas.map((person) => person.toBytes()).expand((byteList) => byteList).toList();
 
-
+    File file = await getFile();
+    await file.writeAsBytes(bytes);  
+  
+  
   }
 
   _cardToAddPerson(BuildContext context) {
