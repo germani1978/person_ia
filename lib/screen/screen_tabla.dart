@@ -115,14 +115,11 @@ void handleSharedFile(List<SharedMediaFile> files) {
 
   void _compartirLista() async {
     final personas = await DatabaseHelper.instance.queryAll();
-    String jsonString = jsonEncode(personas.map((p) => p.toMap()).toList());
-    //Share.share(jsonString);
+    // String jsonString = jsonEncode(personas.map((p) => p.toMap()).toList());
 
     List<int> bytes = personas.map((person) => person.toBytes()).expand((byteList) => byteList).toList().cast<int>();
-
     File file = await getFile();
     await file.writeAsBytes(bytes);  
-  
     Share.shareXFiles([XFile(file.path)]);
   }
 
