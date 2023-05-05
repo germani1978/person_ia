@@ -44,7 +44,7 @@ class Persona {
   }
 
   List<int> toBytes() {
-  List<int> bytes = utf8.encode(json.encode(this.toMap()));
+  List<int> bytes = utf8.encode(json.encode(toMap()));
   return bytes;
 }
 
