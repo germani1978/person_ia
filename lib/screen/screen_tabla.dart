@@ -1,8 +1,9 @@
 // ignore_for_file: prefer_const_constructors, unused_element, unused_local_variable, avoid_print
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-// import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:provider/provider.dart';
@@ -12,44 +13,18 @@ import 'package:share_plus/share_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
-
 import 'package:person_ia/datos/persona.dart';
 import 'package:person_ia/provider/personas_provider.dart';
 import 'package:person_ia/datos/database.dart';
 
 class ScreenTabla extends StatefulWidget {
-  const ScreenTabla({super.key});
+  const ScreenTabla({Key? key}):super(key: key);
 
   @override
   State<ScreenTabla> createState() => _ScreenTablaState();
 }
 
 class _ScreenTablaState extends State<ScreenTabla> {
-
-@override
-void initState() {
-  super.initState();
-  // Registra un IntentReceiver para recibir contenido compartido
-  ReceiveSharingIntent.getMediaStream().listen((List<SharedMediaFile> files) {
-    // Maneja el archivo compartido aquí
-    handleSharedFile(files);
-  });
-}
-
-void handleSharedFile(List<SharedMediaFile> files) {
-  // Verifica si hay algún archivo compartido
-  if (files.isNotEmpty) {
-    // Obtén el primer archivo compartido
-    final file = files[0].path;
-    // Maneja el archivo aquí
-    print('aqui');
-    // ...
-  }
-}
-
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -108,19 +83,21 @@ void handleSharedFile(List<SharedMediaFile> files) {
   }
 
   Future<File> getFile() async {
-      Directory directory = await getApplicationDocumentsDirectory();
-      String path = directory.path;
-      return File('$path/file.gba');
-    }
+    Directory directory = await getApplicationDocumentsDirectory();
+    String path = directory.path;
+    return File('$path/file.gba');
+  }
 
   void _compartirLista() async {
     final personas = await DatabaseHelper.instance.queryAll();
-    // String jsonString = jsonEncode(personas.map((p) => p.toMap()).toList());
+    List<Map<String, dynamic>> listaMap =
+        personas.map((persona) => persona.toMap()).toList();
+    final jsonString = jsonEncode(listaMap);
 
-    List<int> bytes = personas.map((person) => person.toBytes()).expand((byteList) => byteList).toList().cast<int>();
-    File file = await getFile();
-    await file.writeAsBytes(bytes);  
-    Share.shareXFiles([XFile(file.path)]);
+    final file = await getFile();
+    await file.writeAsString(jsonString);
+    await Share.shareXFiles([XFile(file.path)]);
+    print('ok');
   }
 
   _cardToAddPerson(BuildContext context) {
@@ -207,13 +184,49 @@ void handleSharedFile(List<SharedMediaFile> files) {
 }
 
 class ContenedorTabla extends StatefulWidget {
-  const ContenedorTabla({super.key});
+  const ContenedorTabla({Key? key}):super(key: key);
 
   @override
   State<ContenedorTabla> createState() => _ContenedorTablaState();
 }
 
 class _ContenedorTablaState extends State<ContenedorTabla> {
+  late StreamSubscription _intentDataStreamSubscription;
+  late List<SharedMediaFile> _sharedFiles;
+
+   void receiveMediaFiles() {
+    _intentDataStreamSubscription = ReceiveSharingIntent.getMediaStream()
+        .listen((List<SharedMediaFile> value) {
+      setState(() {
+        _sharedFiles = value;
+        if (_sharedFiles.isNotEmpty) {
+          final xFile = XFile(_sharedFiles[0].path);
+          xFile.readAsString().then((value) {
+            final personas = jsonDecode(value);
+            for (var personaMap in personas) {
+              final persona = Persona.fromMap(personaMap);
+              Provider.of<MyData>(context, listen: false).addPersona(persona);
+            }
+          });
+        }
+      });
+    }, onError: (err) {
+      print("Error al recibir archivos compartidos: $err");
+    });
+  }
+
+  @override
+  void initState() {
+    receiveMediaFiles();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _intentDataStreamSubscription.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Persona>>(
@@ -229,15 +242,20 @@ class _ContenedorTablaState extends State<ContenedorTabla> {
   }
 }
 
-class Tabla extends StatelessWidget {
-  final _formKey = GlobalKey<FormState>();
-
-  Tabla({
+class Tabla extends StatefulWidget {
+  const Tabla({
     super.key,
     required this.personas,
   });
 
   final List<Persona> personas;
+
+  @override
+  State<Tabla> createState() => _TablaState();
+}
+
+class _TablaState extends State<Tabla> {
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -252,7 +270,7 @@ class Tabla extends StatelessWidget {
           headingRowHeight: 64.0,
           dividerThickness: 1.0,
           columns: _columunTitle,
-          rows: personas
+          rows: widget.personas
               .map((persona) => _filaCeldasTabla(persona, context))
               .toList(),
         ),

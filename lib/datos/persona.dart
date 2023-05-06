@@ -7,10 +7,8 @@ class Persona {
   int horas;
   int revisitas;
   int estudios;
-  int id;
 
   Persona({
-    this.id = -1,
     this.nombre = "",
     this.publicaciones = 0,
     this.videos = 0,
@@ -32,7 +30,6 @@ class Persona {
 
   factory Persona.fromMap(Map<String, dynamic> map) {
     Persona persona = Persona(
-      id:map['_id'],
       nombre: map['nombre'],
       publicaciones: map['publicaciones'],
       videos: map['videos'],
@@ -44,9 +41,15 @@ class Persona {
   }
 
   List<int> toBytes() {
-  List<int> bytes = utf8.encode(json.encode(toMap()));
-  return bytes;
-}
+    List<int> bytes = utf8.encode(json.encode(toMap()));
+    return bytes;
+  }
+
+  factory Persona.fromBytes(List<int> bytes) {
+    String jsonString = utf8.decode(bytes);
+    Map<String, dynamic> map = json.decode(jsonString);
+    return Persona.fromMap(map);
+  }
 
   void setField(String fieldName, int value) {
     switch (fieldName) {
@@ -68,8 +71,8 @@ class Persona {
     }
   }
 
-   int getField(String fieldName) {
-    switch(fieldName) {
+  int getField(String fieldName) {
+    switch (fieldName) {
       case 'publicaciones':
         return publicaciones;
       case 'videos':

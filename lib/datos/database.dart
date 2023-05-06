@@ -84,12 +84,12 @@ class DatabaseHelper {
   }
 
   Future<void> update(Persona persona) async {
-    Database db = await instance.database;
-    db.update(table, {
+    // Database db = await instance.database;
+    // db.update(table, {
 
-    },
-    where: 'id = ?',
-    whereArgs: [persona.id]);
+    // },
+    // where: 'id = ?',
+    // whereArgs: [persona.id]);
   }
 
 

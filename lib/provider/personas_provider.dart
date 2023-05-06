@@ -16,7 +16,7 @@ class MyData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addPersona( Persona persona) async{
+  Future<void> addPersona( Persona persona) async{
     await DatabaseHelper.instance.insert(persona);
     notifyListeners();
   }
