@@ -1,13 +1,9 @@
 // ignore_for_file: unused_field
 
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:person_ia/datos/database.dart';
 import 'package:person_ia/provider/personas_provider.dart';
 import 'package:person_ia/screen/screen_tabla.dart';
 import 'package:provider/provider.dart';
-import 'package:share_plus/share_plus.dart';
-import 'datos/persona.dart';
 
 void main() {
   runApp(ChangeNotifierProvider(
